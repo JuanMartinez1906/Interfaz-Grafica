@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Métodos numéricos · Laboratorio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400..600&family=IBM+Plex+Mono:wght@400;500&family=Quicksand:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjs@12.4.1/lib/browser/math.min.js"></script>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <span class="eyebrow">Análisis Numérico · Laboratorio</span>
+    <h1>Métodos <em>numéricos</em></h1>
+    <p>Soluciones para ecuaciones no lineales, sistemas lineales e interpolación.</p>
+    <nav>
+      <button class="active" data-tab="single">Raíces</button>
+      <button data-tab="linear">Sistemas lineales</button>
+      <button data-tab="interp">Interpolación</button>
+      <button data-tab="docs">Documentación</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ================== RAÍCES ================== -->
+<section id="single" class="panel active">
+  <h2>Funciones de una variable</h2>
+  <div class="grid">
+    <div class="card">
+
+      <label for="fn">
+        f(x)
+        <span class="tip-host">
+          <button type="button" class="tip-btn" aria-label="Ayuda sobre f(x)">?</button>
+          <span class="tip-popover" role="tooltip">
+            <p><strong>La función cuya raíz quieres encontrar</strong> (donde f(x)=0).</p>
+            <p>Usa <code>^</code> para potencias, <code>*</code> para multiplicar (puedes omitirlo: <code>2x</code> sirve), y funciones como <code>sin(x)</code>, <code>cos(x)</code>, <code>exp(x)</code>, <code>log(x)</code>, <code>sqrt(x)</code>.</p>
+            <p>Ejemplo: <code>x^3 - x - 2</code></p>
+          </span>
+        </span>
+      </label>
+      <input id="fn" value="x^3 - x - 2">
+
+      <label for="gfn">
+        g(x), para punto fijo
+        <span class="tip-host">
+          <button type="button" class="tip-btn" aria-label="Ayuda sobre g(x)">?</button>
+          <span class="tip-popover" role="tooltip">
+            <p><strong>Solo se usa con Punto fijo.</strong> Es <code>f(x)=0</code> reescrita como <code>x = g(x)</code>.</p>
+            <p>Ejemplo: si <code>f(x) = x^3 - x - 2</code>, una opción es <code>g(x) = (x+2)^(1/3)</code>.</p>
+            <p>Para que converja, <code>|g'(x)|</code> debe ser menor que 1 cerca de la raíz.</p>
+          </span>
+        </span>
+      </label>
+      <input id="gfn" value="(x+2)^(1/3)">
+
+      <div class="two">
+        <span>
+          <label for="a">
+            a
+            <span class="tip-host">
+              <button type="button" class="tip-btn" aria-label="Ayuda sobre a">?</button>
+              <span class="tip-popover" role="tooltip">
+                <p><strong>Extremo izquierdo del intervalo.</strong></p>
+                <p>Lo usan Bisección y Regla falsa. <code>f(a)</code> y <code>f(b)</code> deben tener signos opuestos.</p>
+              </span>
+            </span>
+          </label>
+          <input id="a" type="number" value="1" step="any">
+        </span>
+        <span>
+          <label for="b">
+            b
+            <span class="tip-host">
+              <button type="button" class="tip-btn" aria-label="Ayuda sobre b">?</button>
+              <span class="tip-popover tip-right" role="tooltip">
+                <p><strong>Extremo derecho del intervalo.</strong></p>
+                <p>Lo usan Bisección y Regla falsa. Debe cumplirse <code>f(a)·f(b) &lt; 0</code>.</p>
+              </span>
+            </span>
+          </label>
+          <input id="b" type="number" value="2" step="any">
+        </span>
+      </div>
+
+      <div class="two">
+        <span>
+          <label for="x0">
+            x0
+            <span class="tip-host">
+              <button type="button" class="tip-btn" aria-label="Ayuda sobre x0">?</button>
+              <span class="tip-popover" role="tooltip">
+                <p><strong>Valor inicial.</strong> Desde aquí arranca la iteración.</p>
+                <p>Lo usan Newton, Secante, Punto fijo y los Newton modificados. Mientras más cerca de la raíz, mejor.</p>
+              </span>
+            </span>
+          </label>
+          <input id="x0" type="number" value="1.5" step="any">
+        </span>
+        <span>
+          <label for="x1">
+            x1
+            <span class="tip-host">
+              <button type="button" class="tip-btn" aria-label="Ayuda sobre x1">?</button>
+              <span class="tip-popover tip-right" role="tooltip">
+                <p><strong>Segundo valor inicial.</strong></p>
+                <p>Solo lo usa Secante (necesita dos puntos para arrancar).</p>
+              </span>
+            </span>
+          </label>
+          <input id="x1" type="number" value="2" step="any">
+        </span>
+      </div>
+
+      <div class="two">
+        <span>
+          <label for="tol">
+            tolerancia
+            <span class="tip-host">
+              <button type="button" class="tip-btn" aria-label="Ayuda sobre tolerancia">?</button>
+              <span class="tip-popover" role="tooltip">
+                <p><strong>Qué tan pequeño debe ser el error para parar.</strong></p>
+                <p>Más pequeño = más precisión, pero más iteraciones. Típico: <code>0.000001</code> (es decir, 1×10⁻⁶).</p>
+              </span>
+            </span>
+          </label>
+          <input id="tol" type="number" value="0.000001" step="any">
+        </span>
+        <span>
+          <label for="maxIter">
+            iteraciones
+            <span class="tip-host">
+              <button type="button" class="tip-btn" aria-label="Ayuda sobre iteraciones">?</button>
+              <span class="tip-popover tip-right" role="tooltip">
+                <p><strong>Tope máximo de pasos.</strong></p>
+                <p>Si el método no llega a la tolerancia antes, devuelve el último valor calculado. Máximo permitido: <code>1000</code>.</p>
+              </span>
+            </span>
+          </label>
+          <input id="maxIter" type="number" value="50">
+        </span>
+      </div>
+
+      <label for="singleMethod">
+        Método
+        <span class="tip-host">
+          <button type="button" class="tip-btn" aria-label="Ayuda sobre los métodos">?</button>
+          <span class="tip-popover" role="tooltip">
+            <p>Cada método tiene requisitos distintos. Mira la pestaña <strong>Documentación</strong> para saber cuál te conviene.</p>
+            <p><strong>Comparar métodos</strong> ejecuta varios a la vez y los ordena por iteraciones.</p>
+          </span>
+        </span>
+      </label>
+      <select id="singleMethod">
+        <option value="bisection">Bisección</option>
+        <option value="falsePosition">Regla falsa</option>
+        <option value="fixedPoint">Punto fijo</option>
+        <option value="newton">Newton-Raphson</option>
+        <option value="secant">Secante</option>
+        <option value="modifiedNewtonMultiplicity">Newton mod. multiplicidad</option>
+        <option value="compareSingle">Comparar métodos</option>
+      </select>
+
+      <div class="actions">
+        <button id="runSingle">Resolver raíz</button>
+        <select id="singleExamples" class="example-picker" aria-label="Cargar ejemplo">
+          <option value="">Cargar ejemplo…</option>
+          <option value="poly">Polinomio: x³ − x − 2</option>
+          <option value="trig">Trigonométrico: cos(x) − x</option>
+          <option value="exp">Exponencial: eˣ − 3x</option>
+          <option value="multiple">Raíz múltiple: (x−2)³</option>
+        </select>
+      </div>
+
+    </div>
+    <div class="card output">
+      <h3>Resultado</h3>
+      <div id="singleOut" class="result"></div>
+      <div id="plotSingle" class="plot"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================== SISTEMAS LINEALES ================== -->
+<section id="linear" class="panel">
+  <h2>Sistemas lineales Ax=b</h2>
+  <div class="grid">
+    <div class="card">
+
+      <label for="A">
+        Matriz A (JSON)
+        <span class="tip-host">
+          <button type="button" class="tip-btn" aria-label="Ayuda sobre la matriz A">?</button>
+          <span class="tip-popover" role="tooltip">
+            <p><strong>La matriz cuadrada del sistema A·x = b.</strong> Tamaño entre 2×2 y 7×7.</p>
+            <p>Cada fila va entre corchetes, separada por comas. Ejemplo:</p>
+            <p><code>[[4,1,2],[3,5,1],[1,1,3]]</code></p>
+            <p>Para que estos métodos converjan rápido, la diagonal debe ser <em>dominante</em> (cada |aᵢᵢ| mayor que la suma de |aᵢⱼ| en la fila).</p>
+          </span>
+        </span>
+      </label>
+      <textarea id="A">[[4,1,2],[3,5,1],[1,1,3]]</textarea>
+
+      <label for="bv">
+        Vector b
+        <span class="tip-host">
+          <button type="button" class="tip-btn" aria-label="Ayuda sobre el vector b">?</button>
+          <span class="tip-popover" role="tooltip">
+            <p><strong>Lado derecho del sistema A·x = b.</strong></p>
+            <p>Mismo tamaño que las filas de A. Ejemplo: <code>[4,7,3]</code>.</p>
+          </span>
+        </span>
+      </label>
+      <input id="bv" value="[4,7,3]">
+
+      <label for="xv">
+        Vector inicial x0
+        <span class="tip-host">
+          <button type="button" class="tip-btn" aria-label="Ayuda sobre x0">?</button>
+          <span class="tip-popover" role="tooltip">
+            <p><strong>Aproximación inicial al vector solución.</strong></p>
+            <p>Si no tienes idea, usa todo ceros: <code>[0,0,0]</code>. Mismo tamaño que b.</p>
+          </span>
+        </span>
+      </label>
+      <input id="xv" value="[0,0,0]">
+
+      <div class="two">
+        <span>
+          <label for="omega">
+            ω para SOR
+            <span class="tip-host">
+              <button type="button" class="tip-btn" aria-label="Ayuda sobre omega">?</button>
+              <span class="tip-popover" role="tooltip">
+                <p><strong>Peso de relajación.</strong> Solo se usa con SOR.</p>
+                <p><code>0 &lt; ω &lt; 2</code>, sin incluir extremos.</p>
+                <p><code>ω = 1</code> es Gauss-Seidel exactamente. <code>ω &gt; 1</code> sobre-relaja (acelera). <code>ω &lt; 1</code> sub-relaja (estabiliza).</p>
+              </span>
+            </span>
+          </label>
+          <input id="omega" value="1.1" type="number" step="any">
+        </span>
+        <span>
+          <label for="linearMethod">
+            método
+            <span class="tip-host">
+              <button type="button" class="tip-btn" aria-label="Ayuda sobre los métodos lineales">?</button>
+              <span class="tip-popover tip-right" role="tooltip">
+                <p><strong>Jacobi:</strong> usa solo el vector anterior.</p>
+                <p><strong>Gauss-Seidel:</strong> reutiliza valores nuevos al instante (suele ser más rápido).</p>
+                <p><strong>SOR:</strong> Gauss-Seidel con peso ω.</p>
+                <p><strong>Comparar:</strong> corre los tres con ω = 0.8, 1.0 y 1.2.</p>
+              </span>
+            </span>
+          </label>
+          <select id="linearMethod">
+            <option value="jacobi">Jacobi</option>
+            <option value="gaussSeidel">Gauss-Seidel</option>
+            <option value="sor">SOR</option>
+            <option value="compareLinear">Comparar</option>
+          </select>
+        </span>
+      </div>
+
+      <div class="actions">
+        <button id="runLinear">Resolver sistema</button>
+        <select id="linearExamples" class="example-picker" aria-label="Cargar ejemplo">
+          <option value="">Cargar ejemplo…</option>
+          <option value="three">3×3 diagonal dominante</option>
+          <option value="two">2×2 simple</option>
+          <option value="four">4×4 mediano</option>
+        </select>
+      </div>
+
+    </div>
+    <div class="card output">
+      <h3>Resultado</h3>
+      <div id="linearOut" class="result"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================== INTERPOLACIÓN ================== -->
+<section id="interp" class="panel">
+  <h2>Interpolación</h2>
+  <div class="grid">
+    <div class="card">
+
+      <label for="points">
+        Puntos [{x,y}]
+        <span class="tip-host">
+          <button type="button" class="tip-btn" aria-label="Ayuda sobre los puntos">?</button>
+          <span class="tip-popover" role="tooltip">
+            <p><strong>Lista de pares (x, y) por los que pasa el polinomio.</strong></p>
+            <p>Entre 2 y 8 puntos. Los valores de <code>x</code> NO pueden repetirse.</p>
+            <p>Formato JSON: <code>[{"x":0,"y":1},{"x":1,"y":3}]</code></p>
+          </span>
+        </span>
+      </label>
+      <textarea id="points">[{"x":0,"y":1},{"x":1,"y":3},{"x":2,"y":2},{"x":3,"y":5}]</textarea>
+
+      <label for="evalX">
+        Evaluar en x
+        <span class="tip-host">
+          <button type="button" class="tip-btn" aria-label="Ayuda sobre evalX">?</button>
+          <span class="tip-popover" role="tooltip">
+            <p><strong>Valor de x donde quieres evaluar el polinomio interpolado.</strong></p>
+            <p>Para splines, debe estar dentro del rango de tus puntos (entre el x menor y el mayor).</p>
+          </span>
+        </span>
+      </label>
+      <input id="evalX" type="number" step="any" value="1.5">
+
+      <label for="interpMethod">
+        Método
+        <span class="tip-host">
+          <button type="button" class="tip-btn" aria-label="Ayuda sobre los métodos de interpolación">?</button>
+          <span class="tip-popover" role="tooltip">
+            <p><strong>Vandermonde:</strong> polinomio único en forma estándar.</p>
+            <p><strong>Newton:</strong> diferencias divididas; bueno si agregas puntos.</p>
+            <p><strong>Lagrange:</strong> suma de polinomios base.</p>
+            <p><strong>Spline lineal:</strong> rectas entre puntos consecutivos.</p>
+            <p><strong>Spline cúbico natural:</strong> curva suave por tramos.</p>
+          </span>
+        </span>
+      </label>
+      <select id="interpMethod">
+        <option value="vandermonde">Vandermonde</option>
+        <option value="dividedDifferences">Newton diferencias divididas</option>
+        <option value="lagrange">Lagrange</option>
+        <option value="linearSpline">Spline lineal</option>
+        <option value="cubicSpline">Spline cúbico natural</option>
+        <option value="compareInterpolation">Comparar</option>
+      </select>
+
+      <div class="actions">
+        <button id="runInterp">Interpolar</button>
+        <select id="interpExamples" class="example-picker" aria-label="Cargar ejemplo">
+          <option value="">Cargar ejemplo…</option>
+          <option value="default">4 puntos genéricos</option>
+          <option value="sine">Datos tipo seno</option>
+          <option value="experimental">Datos experimentales</option>
+        </select>
+      </div>
+
+    </div>
+    <div class="card output">
+      <h3>Resultado</h3>
+      <div id="interpOut" class="result"></div>
+      <div id="plotInterp" class="plot"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================== DOCUMENTACIÓN ================== -->
+<section id="docs" class="panel">
+  <h2>Documentación de métodos</h2>
+  <div class="card docs">
+
+    <h3>Cómo escribir funciones</h3>
+    <p>El backend usa la librería <code>mathjs</code>. Sintaxis estándar:</p>
+    <table class="syntax">
+      <tr><td>Quieres escribir</td><td>Escribe</td></tr>
+      <tr><td>x al cuadrado, x al cubo</td><td><code>x^2</code>, <code>x^3</code></td></tr>
+      <tr><td>2 por x</td><td><code>2*x</code> o <code>2x</code></td></tr>
+      <tr><td>x dividido entre 3</td><td><code>x/3</code></td></tr>
+      <tr><td>seno, coseno, tangente</td><td><code>sin(x)</code>, <code>cos(x)</code>, <code>tan(x)</code></td></tr>
+      <tr><td>e elevado a x</td><td><code>exp(x)</code> o <code>e^x</code></td></tr>
+      <tr><td>logaritmo natural</td><td><code>log(x)</code></td></tr>
+      <tr><td>logaritmo base 10</td><td><code>log10(x)</code></td></tr>
+      <tr><td>raíz cuadrada</td><td><code>sqrt(x)</code></td></tr>
+      <tr><td>valor absoluto</td><td><code>abs(x)</code></td></tr>
+      <tr><td>π</td><td><code>pi</code></td></tr>
+    </table>
+    <p>Ejemplos válidos: <code>x^3 - x - 2</code>, <code>cos(x) - x</code>, <code>exp(x) - 3*x</code>, <code>sin(x) - x/2</code>, <code>(x+2)^(1/3)</code>.</p>
+
+    <h3>Métodos para raíces</h3>
+
+    <article class="method">
+      <h4>Bisección</h4>
+      <dl>
+        <dt>Qué hace</dt>
+        <dd>Parte el intervalo <code>[a,b]</code> a la mitad y conserva el subintervalo donde cambia el signo. Repite hasta que el error o <code>|f(x)|</code> sea menor que la tolerancia.</dd>
+        <dt>Cuándo usarlo</dt>
+        <dd>Cuando tienes un intervalo donde <code>f(a)</code> y <code>f(b)</code> tienen signos opuestos. Lento pero <strong>siempre converge</strong> si la función es continua.</dd>
+        <dt>Necesitas</dt>
+        <dd>f(x), a, b, tolerancia, máximo de iteraciones.</dd>
+        <dt>Cómo leer la salida</dt>
+        <dd><code>k</code> = número de iteración. <code>x</code> = raíz aproximada actual. <code>fx</code> = valor de f ahí. <code>error</code> = diferencia con la iteración anterior.</dd>
+      </dl>
+    </article>
+
+    <article class="method">
+      <h4>Regla falsa</h4>
+      <dl>
+        <dt>Qué hace</dt>
+        <dd>Como bisección, pero usa la recta entre <code>(a, f(a))</code> y <code>(b, f(b))</code> para proponer la raíz, no el punto medio.</dd>
+        <dt>Cuándo usarlo</dt>
+        <dd>Cuando bisección es muy lento y la función no es muy curva. Suele converger más rápido.</dd>
+        <dt>Necesitas</dt>
+        <dd>Lo mismo que bisección.</dd>
+      </dl>
+    </article>
+
+    <article class="method">
+      <h4>Punto fijo</h4>
+      <dl>
+        <dt>Qué hace</dt>
+        <dd>Convierte <code>f(x)=0</code> en <code>x = g(x)</code> y repite <code>x_{n+1} = g(x_n)</code>. El punto fijo de g es la raíz de f.</dd>
+        <dt>Cuándo usarlo</dt>
+        <dd>Cuando puedes reescribir tu ecuación como <code>x = g(x)</code> y <code>|g'(x)| &lt; 1</code> cerca de la raíz. Si no, diverge.</dd>
+        <dt>Necesitas</dt>
+        <dd><strong>g(x)</strong> (no f), x0, tolerancia, máximo de iteraciones.</dd>
+        <dt>Cómo leer la salida</dt>
+        <dd><code>gx</code> = g aplicada a la x anterior. <code>error</code> = <code>|x_nuevo − x_viejo|</code>.</dd>
+      </dl>
+    </article>
+
+    <article class="method">
+      <h4>Newton-Raphson</h4>
+      <dl>
+        <dt>Qué hace</dt>
+        <dd>Usa la recta tangente a f en <code>x_n</code> para encontrar la siguiente aproximación: <code>x_{n+1} = x_n − f(x_n)/f'(x_n)</code>.</dd>
+        <dt>Cuándo usarlo</dt>
+        <dd>Cuando f es derivable, <code>x0</code> está cerca de la raíz, y la derivada no se anula. Muy rápido (convergencia cuadrática).</dd>
+        <dt>Necesitas</dt>
+        <dd>f(x), x0, tolerancia, máximo de iteraciones. <strong>La derivada se calcula automáticamente</strong> con mathjs.</dd>
+        <dt>Cómo leer la salida</dt>
+        <dd><code>dfx</code> = derivada evaluada ahí. Si es cercana a cero, el método se detiene.</dd>
+        <dt>Cuidado</dt>
+        <dd>Si <code>x0</code> está lejos o la curva oscila, puede divergir o caer en un ciclo.</dd>
+      </dl>
+    </article>
+
+    <article class="method">
+      <h4>Secante</h4>
+      <dl>
+        <dt>Qué hace</dt>
+        <dd>Como Newton, pero aproxima <code>f'</code> usando los dos valores anteriores. No necesita derivada.</dd>
+        <dt>Cuándo usarlo</dt>
+        <dd>Cuando no quieres calcular derivadas. Casi tan rápido como Newton.</dd>
+        <dt>Necesitas</dt>
+        <dd>f(x), <strong>x0 y x1</strong> (dos valores iniciales distintos), tolerancia, máximo de iteraciones.</dd>
+        <dt>Cuidado</dt>
+        <dd>Si <code>f(x_n)</code> y <code>f(x_{n-1})</code> son iguales, divide entre cero.</dd>
+      </dl>
+    </article>
+
+    <article class="method">
+      <h4>Newton modificado por multiplicidad</h4>
+      <dl>
+        <dt>Qué hace</dt>
+        <dd>Newton corregido por un factor <code>m</code>: <code>x_{n+1} = x_n − m·f(x_n)/f'(x_n)</code>. Acelera la convergencia cuando la raíz es múltiple.</dd>
+        <dt>Cuándo usarlo</dt>
+        <dd>Si sabes que la raíz se repite m veces. Ejemplo: <code>(x−2)^3</code> tiene raíz triple en 2, así que <code>m=3</code>.</dd>
+        <dt>Necesitas</dt>
+        <dd>f(x), x0, m (multiplicidad). El frontend usa <code>m=2</code> por defecto.</dd>
+      </dl>
+    </article>
+
+    <h3>Métodos para sistemas lineales</h3>
+
+    <article class="method">
+      <h4>Jacobi</h4>
+      <dl>
+        <dt>Qué hace</dt>
+        <dd>Resuelve <code>A·x = b</code> iterando: cada componente nueva usa solo el vector anterior completo.</dd>
+        <dt>Cuándo usarlo</dt>
+        <dd>Matrices diagonalmente dominantes. Se puede paralelizar fácilmente porque cada componente es independiente dentro de una iteración.</dd>
+        <dt>Necesitas</dt>
+        <dd>Matriz A (2×2 a 7×7), vector b, vector inicial x0, tolerancia, máximo de iteraciones.</dd>
+        <dt>Cómo leer la salida</dt>
+        <dd>Cada fila de la tabla muestra el vector <code>x</code> después de esa iteración. <code>error</code> = norma infinito de la diferencia con la iteración anterior.</dd>
+      </dl>
+    </article>
+
+    <article class="method">
+      <h4>Gauss-Seidel</h4>
+      <dl>
+        <dt>Qué hace</dt>
+        <dd>Como Jacobi, pero usa los valores nuevos apenas los calcula (en vez de esperar al final de la iteración).</dd>
+        <dt>Cuándo usarlo</dt>
+        <dd>Casi siempre converge más rápido que Jacobi en sistemas diagonalmente dominantes.</dd>
+        <dt>Necesitas</dt>
+        <dd>Lo mismo que Jacobi.</dd>
+      </dl>
+    </article>
+
+    <article class="method">
+      <h4>SOR (Successive Over-Relaxation)</h4>
+      <dl>
+        <dt>Qué hace</dt>
+        <dd>Gauss-Seidel con un peso ω: <code>x = (1−ω)·x_anterior + ω·x_GS</code>.</dd>
+        <dt>Cuándo usarlo</dt>
+        <dd>Cuando Gauss-Seidel converge lento. Ajustar ω puede acelerar mucho.</dd>
+        <dt>Necesitas</dt>
+        <dd>Lo mismo que Gauss-Seidel, más <strong>ω entre 0 y 2</strong> sin incluir extremos. <code>ω=1</code> es Gauss-Seidel exactamente.</dd>
+      </dl>
+    </article>
+
+    <h3>Métodos de interpolación</h3>
+
+    <article class="method">
+      <h4>Vandermonde</h4>
+      <dl>
+        <dt>Qué hace</dt>
+        <dd>Arma un sistema lineal con potencias de x para encontrar el polinomio único que pasa por todos los puntos.</dd>
+        <dt>Cuándo usarlo</dt>
+        <dd>Cuando quieres el polinomio explícito en forma estándar <code>a₀ + a₁x + a₂x² + …</code>.</dd>
+        <dt>Cuidado</dt>
+        <dd>Con muchos puntos (8+) la matriz se vuelve mal condicionada.</dd>
+      </dl>
+    </article>
+
+    <article class="method">
+      <h4>Newton (diferencias divididas)</h4>
+      <dl>
+        <dt>Qué hace</dt>
+        <dd>Construye una tabla triangular de diferencias divididas y forma el polinomio paso a paso: <code>P(x) = a₀ + a₁(x−x₀) + a₂(x−x₀)(x−x₁) + …</code></dd>
+        <dt>Cuándo usarlo</dt>
+        <dd>Cuando puedes querer agregar puntos sin recalcular todo. Numéricamente más estable que Vandermonde.</dd>
+      </dl>
+    </article>
+
+    <article class="method">
+      <h4>Lagrange</h4>
+      <dl>
+        <dt>Qué hace</dt>
+        <dd>Forma el polinomio como suma <code>P(x) = Σ yᵢ·Lᵢ(x)</code>, donde cada <code>Lᵢ</code> vale 1 en su punto y 0 en los demás.</dd>
+        <dt>Cuándo usarlo</dt>
+        <dd>Cuando solo necesitas evaluar en pocos puntos. Fácil de derivar a mano.</dd>
+      </dl>
+    </article>
+
+    <article class="method">
+      <h4>Spline lineal</h4>
+      <dl>
+        <dt>Qué hace</dt>
+        <dd>Une cada par de puntos consecutivos con una recta. El resultado es una poligonal.</dd>
+        <dt>Cuándo usarlo</dt>
+        <dd>Cuando los datos pueden tener ruido y no quieres oscilaciones (fenómeno de Runge).</dd>
+      </dl>
+    </article>
+
+    <article class="method">
+      <h4>Spline cúbico natural</h4>
+      <dl>
+        <dt>Qué hace</dt>
+        <dd>Une los puntos con polinomios cúbicos por tramos. Impone segunda derivada cero en los extremos (de ahí lo de "natural").</dd>
+        <dt>Cuándo usarlo</dt>
+        <dd>Cuando quieres una curva suave que pasa por todos los puntos sin las oscilaciones de un polinomio único de grado alto.</dd>
+        <dt>Cómo leer la salida</dt>
+        <dd><code>M</code> = vector de segundas derivadas en cada nodo (con <code>M[0] = M[n−1] = 0</code>). Cada <code>segments[i]</code> describe el cúbico entre dos puntos consecutivos.</dd>
+      </dl>
+    </article>
+
+    <h3>Cómo leer las gráficas</h3>
+    <p>En <strong>Raíces</strong>, la gráfica muestra <code>f(x)</code> entre −10 y 10. La raíz está donde la curva cruza el eje x. Si tu intervalo está fuera de ese rango, la verás aplastada cerca del cero.</p>
+    <p>En <strong>Interpolación</strong>, la gráfica muestra los puntos de entrada conectados por segmentos rectos para que veas la nube. El polinomio interpolado evaluado en <code>evalX</code> aparece en el bloque resumen del resultado.</p>
+
+  </div>
+</section>
+
+</main>
+
+<audio id="bgMusic" loop preload="none">
+  <source src="assets/just-the-way-you-are.mp3" type="audio/mpeg">
+</audio>
+<button id="musicToggle" class="music-toggle" type="button" aria-label="Reproducir música">
+  <span class="music-icon" aria-hidden="true">♪</span>
+  <span class="music-label">poner musiquita</span>
+</button>
+
+<script src="app.js"></script>
+</body>
+</html>
