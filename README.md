@@ -607,7 +607,8 @@ graph TD
 
 ## Pantalla principal
 
-> **[INSERTAR FOTO]**
+> <img width="1854" height="888" alt="image" src="https://github.com/user-attachments/assets/72b7e20c-f080-41bf-9809-9a38fa303253" />
+
 > Vista completa de la aplicación al abrir `http://localhost:3000`.
 > Debe mostrar: encabezado con el título "Métodos numéricos", la barra de navegación con las cuatro pestañas (Raíces, Sistemas lineales, Interpolación, Documentación), y el panel activo de "Raíces".
 
@@ -615,54 +616,62 @@ graph TD
 
 ## Sección Raíces — entrada
 
-> **[INSERTAR FOTO]**
+> <img width="1871" height="890" alt="image" src="https://github.com/user-attachments/assets/67edc694-741e-4989-b358-ed118a66730c" />
+
 > Panel de "Raíces" con los campos completados para ejecutar, por ejemplo, Newton-Raphson sobre $f(x) = x^3 - x - 2$. Idealmente con el tooltip `?` abierto sobre el campo `f(x)`.
 
 
 ## Sección Raíces — resultado y gráfica
 
-> **[INSERTAR FOTO]**
+> <img width="741" height="584" alt="image" src="https://github.com/user-attachments/assets/1065f28f-21b1-4b32-a8ae-39a186ca2893" />
+
 > Resultado de Newton-Raphson: bloque resumen con la raíz encontrada, número de iteraciones y error final. Incluir la tabla de iteraciones y la gráfica de Plotly con la curva de la función y la línea vertical en la raíz.
 
 
 
 ## Sección Sistemas lineales — entrada
 
-> **[INSERTAR FOTO]**
+> <img width="596" height="822" alt="image" src="https://github.com/user-attachments/assets/bbf441cd-f515-41f1-a77c-a76e3b0df95a" />
+
 > Panel de "Sistemas lineales" con la matriz $A$, el vector $b$, el vector inicial $x_0$, tolerancia y el método seleccionado (ej. Gauss-Seidel).
 
 
 
 ## Sección Sistemas lineales — resultado
 
-> **[INSERTAR FOTO]**
+> <img width="619" height="822" alt="image" src="https://github.com/user-attachments/assets/d0991226-f0a8-495e-b1ba-d1b09999b30e" />
+
 > Resultado con el vector solución $\vec{x}$, número de iteraciones y tabla de iteraciones con la norma infinito del error por paso.
 
 
 
 ## Sección Interpolación — entrada
 
-> **[INSERTAR FOTO]**
+> <img width="597" height="685" alt="image" src="https://github.com/user-attachments/assets/af5f2bb8-c22c-49ec-97d8-be132882e617" />
+
 > Panel de "Interpolación" con los puntos ingresados como tabla, el valor de evaluación $x_{\text{eval}}$ y el método seleccionado (ej. Spline cúbico natural).
 
 
 ## Sección Interpolación — resultado y gráfica
 
-> **[INSERTAR FOTO]**
+><img width="839" height="579" alt="image" src="https://github.com/user-attachments/assets/74e2996e-2a42-42b0-9243-f7aa6bc95277" />
+
 > Resultado con el polinomio interpolante, la evaluación en $x_{\text{eval}}$, y la gráfica con los puntos originales y la curva interpolada superpuesta.
 
 
 
 ## Tabla de comparación de métodos
 
-> **[INSERTAR FOTO]**
+> <img width="908" height="886" alt="image" src="https://github.com/user-attachments/assets/d27599de-a3f1-4dec-9fdf-2d938d05091c" />
+
 > La tabla comparativa generada al pulsar "Comparar métodos" en cualquiera de las tres secciones, mostrando todos los métodos aplicables con sus resultados lado a lado.
 
 
 
 ## Pestaña de documentación
 
-> **[INSERTAR FOTO]**
+> <img width="1044" height="903" alt="image" src="https://github.com/user-attachments/assets/ffd40f45-3817-4be5-a162-6d35a8436f0f" />
+
 > El panel "Documentación" mostrando los enlaces a los 14 archivos de documentación agrupados por categoría.
 
 
